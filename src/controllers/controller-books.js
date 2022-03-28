@@ -70,10 +70,30 @@ const getBooks = (req, res) => {
           });
     }
 
+    const editBook = (req, res) => {
+      return booksRepository.editBook(req)
+      .then(result => res.json({books: result}))
+      .catch((error) => {
+        res.status(500)
+        res.json({error: "Unexpected Error"})
+      })
+    }
+    
+    const deleteBook = (req, res) => {
+      return booksRepository.deleteBook(req)
+      .then(result => res.json({books: result}))
+      .catch((error) => {
+        res.status(500)
+        res.json({error: "Unexpected Error"})
+      })
+    }
+
     module.exports = {
         getBooks,
         getBookById,
-        addBook
+        addBook,
+        editBook,
+        deleteBook
     }
     
     //Stuff for first bit lol

@@ -56,8 +56,44 @@ const addBook = (book) => {
     )
 }
 
+const editBook = (book) => {
+    const putSQL = 'UPDATE books SET title = $1, type = $2, author = $3, topic = $4, publicationDate = $5, pages = $6 WHERE id = $7 RETURNING *'
+
+    const bookValues = [
+        book.body.title,
+        book.body.type,
+        book.body.author,
+        book.body.topic,
+        book.body.publicationDate,
+        book.body.pages,
+        book.params.id   
+    ]
+
+    return (
+    db.query(putSQL, bookValues)
+    .then(result => result.rows[0])
+    .catch((error) => {
+        throw new Error("Database Error")
+    })
+    )
+}
+
+const deleteBook = (book) => {
+    const deleteSQL = "DELETE FROM books WHERE id = $1 RETURNING *"
+
+    return (
+        db.query(deleteSQL, [book.params.id])
+        .then(result => result.rows[0])
+        .catch((error) => {
+            throw new Error("Database Error")
+        })
+    )
+}
+
 module.exports = {
     getBooks,
     getBookById,
-    addBook
+    addBook,
+    editBook,
+    deleteBook
 }
