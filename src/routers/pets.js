@@ -75,6 +75,34 @@ petsRouter.get("/:id", (req, res) => {
 })
 })
 
+petsRouter.patch("/:id", (req, res) => {
+  let patchSQL = 'UPDATE pets SET '
+  const petFields = ["name", "age", "type", "breed", "microchip"]
+
+  let petValues = []
+  let counter = 1
+
+  for (const field of petFields) {
+    if(req.body[field]){
+      patchSQL += `${field} = $${counter}, `
+      counter++
+      petValues.push(req.body[field])
+  }  
+  }
+
+  patchSQL = patchSQL.substring(0, (patchSQL.length - 2))
+  
+  petValues.push(req.params.id)
+  patchSQL += ` WHERE id = $${counter} RETURNING *`
+
+  db.query(patchSQL, petValues)
+  .then(results => res.json({pets: results.rows[0]}))
+  .catch((error) => {
+    res.status(500)
+    res.json({error: "Unexpected Error"})
+  })
+ });
+
 petsRouter.delete("/:id", (req, res) => {
  const deleteSQL = "DELETE FROM pets WHERE id = $1 RETURNING *"
 
