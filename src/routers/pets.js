@@ -14,6 +14,26 @@ db
 })
 })
 
+petsRouter.get('/breeds', (req, res) => {
+  let getBreedsRequest = `SELECT DISTINCT breed FROM pets`
+  let query = []
+
+  if(req.query.type) {
+    getBreedsRequest += ` WHERE type = $1`
+    query.push(req.query.type)
+  }
+
+  db
+  .query(getBreedsRequest, query)
+  .then(result => {
+      res.json({breeds: result.rows})
+  })
+  .catch((error) => {
+      res.status(500)
+      res.json({error: "Unexpected Error"})
+  })
+  })
+
 petsRouter.get("/:id", (req, res) => {
     db
     .query(`SELECT * FROM pets WHERE id = $1`, [req.params.id])
